@@ -15,9 +15,7 @@ DB_PATH = f"{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 class DbSettings(BaseModel):
     url: str = f"postgresql+asyncpg://{DB_PATH}"
-    # echo: bool = False
     echo: bool = True
-
 
 class Settings(BaseSettings):
     api_v1_prefix: str = "/api/v1"

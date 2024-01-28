@@ -137,6 +137,7 @@ venv.bak/
 
 # mkdocs documentation
 /site
+/docs
 
 # mypy
 .mypy_cache/
@@ -164,6 +165,7 @@ cython_debug/
 
 # Temp project files
 charts*
+queries.sql
 
 # PostgresQL DB Data
 db-data/

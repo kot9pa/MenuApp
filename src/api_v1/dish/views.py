@@ -20,7 +20,7 @@ async def dish_by_id(
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Dish {dish_id} not found!",
+        detail=f"dish not found",
     )
 
 @router.get("/", response_model=list[Dish])

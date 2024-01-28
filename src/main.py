@@ -15,14 +15,12 @@ from api_v1 import internal_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     async with db_helper.engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-    yield    
-    async with db_helper.engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
-
-
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+    
 app = FastAPI(lifespan=lifespan)
+
 app.include_router(router=internal_router, prefix=f"{settings.api_v1_prefix}")
 
 @app.get("/")

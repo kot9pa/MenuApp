@@ -1,29 +1,45 @@
-from statistics import mean
-from sqlalchemy import select, func
+from sqlalchemy import select
+from sqlalchemy.orm import joinedload, selectinload
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .models import Menu
-from .schemas import MenuView, MenuCreate, MenuUpdate, MenuUpdatePartial
+from api_v1.submenu.models import Submenu
+from .schemas import MenuCreate, MenuUpdate, MenuUpdatePartial
 
 
-async def get_menus(session: AsyncSession) -> list[MenuView]:
-    stmt = select(Menu).order_by(Menu.id)    
-    result: Result = await session.execute(stmt)
-    menus = result.scalars().all()
-    for m in menus:
-        print(m.submenus_count)
-        print(m.dishes_count)
-    return list(menus)
+async def get_menus(session: AsyncSession) -> list[Menu]:
+    stmt = select(Menu)
+    result = await session.scalars(stmt)
+    return list(result)
 
 async def get_menu(session: AsyncSession, menu_id: int) -> Menu | None:
-    return await session.get(Menu, menu_id)
+    stmt = select(Menu).where(Menu.id == menu_id)
+    return await session.scalar(stmt)
+
+async def get_menu_with_counts(session: AsyncSession, menu_in: Menu = None) -> list[Menu]:
+    menus = list()
+    if menu_in is None:
+        result = await session.scalars(select(Menu).options(joinedload(Menu.submenus)
+                                .selectinload(Submenu.dishes)))
+    else:
+        result = await session.scalars(select(Menu).options(joinedload(Menu.submenus)
+                                .selectinload(Submenu.dishes)).where(Menu.id == menu_in.id))
+    for r in result.unique():
+        menu = Menu(
+            id = r.id,
+            title = r.title,
+            description = r.description
+        )
+        menu.submenus_count = len(r.submenus)
+        menu.dishes_count = sum(len(s.dishes) for s in r.submenus)
+        menus.append(menu)
+    return list(menus)
 
 async def create_menu(session: AsyncSession, menu_in: MenuCreate) -> Menu:
-    menu = Menu(**menu_in.model_dump())
+    menu = Menu(**menu_in.model_dump(exclude_none=True))
     session.add(menu)
     await session.commit()
-    # await session.refresh(menu)
     return menu
 
 async def update_menu(session: AsyncSession, 

@@ -9,7 +9,6 @@ from .schemas import DishCreate, DishUpdate, DishUpdatePartial
 async def get_dishes(session: AsyncSession, submenu_id: int) -> list[Dish]:
     stmt = select(Dish).where(Dish.submenu_id == submenu_id)
     result: Result = await session.execute(stmt)
-    #dish: Dish | None = await session.scalar(stmt)
     dishes = result.scalars().all()
     return list(dishes)
 

@@ -8,7 +8,7 @@ class MenuBase(BaseModel):
 class Menu(MenuBase):
     id: int
 
-class MenuView(MenuBase):
+class MenuView(Menu):
     submenus_count: int | None = None
     dishes_count: int | None = None
 

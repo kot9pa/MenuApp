@@ -1,21 +1,25 @@
 version: "3.8"
+
 services:
   db:
-    image: postgres    
+    image: postgres:15.1-alpine
+    container_name: db_app
     restart: unless-stopped
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: passwd      
+    env_file:
+      - .env-non-dev 
     volumes:
       - ./db-data:/var/lib/postgresql/data
-  pgadmin:
-    image: dpage/pgadmin4    
+
+  app:
+    build:
+      context: .
+    container_name: fastapi_app
     restart: unless-stopped
+    env_file:
+      - .env-non-dev
     ports:
-      - "5050:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: user@mail.com
-      PGADMIN_DEFAULT_PASSWORD: passwd
+      - "8080:8080"
+    depends_on:
+      - db

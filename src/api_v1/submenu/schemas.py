@@ -1,7 +1,5 @@
 from pydantic import BaseModel
 
-from api_v1.menu.schemas import Menu
-
 
 class SubmenuBase(BaseModel):
     title: str
@@ -9,6 +7,9 @@ class SubmenuBase(BaseModel):
 
 class Submenu(SubmenuBase):
     id: int
+
+class SubmenuView(Submenu):
+    dishes_count: int | None = None
 
 class SubmenuCreate(SubmenuBase):
     pass

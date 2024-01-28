@@ -11,5 +11,5 @@ class Dish(Base):
     description: Mapped[str]
     price: Mapped[str]
 
-    submenu: Mapped["Submenu"] = relationship(back_populates="dishes", cascade="all, delete")
-    submenu_id: Mapped[int] = mapped_column(ForeignKey("submenu.id"), unique=True)
+    submenu: Mapped["Submenu"] = relationship(back_populates="dishes")
+    submenu_id: Mapped[int] = mapped_column(ForeignKey("submenu.id"))
